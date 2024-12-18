@@ -144,5 +144,5 @@ docker-compose exec web python manage.py test
 
 ## Author
 
-Developed by [Your Name].
+Developed by Naveen Chaudhary.
 
