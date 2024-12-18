@@ -22,7 +22,7 @@ class Order(models.Model):
         ('pending', 'Pending'),
         ('completed', 'Completed'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     id = models.AutoField(primary_key=True)
     products = models.JSONField()  # {"product_id": quantity}
     total_price = models.FloatField()

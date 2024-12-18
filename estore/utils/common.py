@@ -73,7 +73,7 @@ class CreateUpdateMixin:
 
 class ListAPIViewWithPagination(generics.ListCreateAPIView):
     pagination_class = CustomPagination
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
 
     def list(self, request, *args, **kwargs):
@@ -94,7 +94,6 @@ class ListAPIViewWithPagination(generics.ListCreateAPIView):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        # import pdb;pdb.set_trace()
         serializer = self.serializer_class(data=request.data, context={"request": request})
         if not serializer.is_valid():
             errors = []
@@ -124,7 +123,7 @@ class ListAPIViewWithPagination(generics.ListCreateAPIView):
 
 
 class CustomCreateAPIView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -157,7 +156,7 @@ class CustomCreateAPIView(generics.CreateAPIView):
 
 
 class CustomRetrieveUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     # lookup_field = 'pk'
 
     def get_view_serializer(self, instance):

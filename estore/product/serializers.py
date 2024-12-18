@@ -30,12 +30,12 @@ class OrderViewSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     products = serializers.JSONField(required=True, error_messages={"required": "Products are required"})
 
     class Meta:
         model = Order
-        fields = ('user', 'products',)
+        fields = ('products',)
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')  # Extract products from input
@@ -70,8 +70,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             })
 
         # Create the order
-        order = Order.objects.create(user=validated_data['user'], total_price=total_price, products=product_details)
-        order.products = product_details  # Custom field for response purposes
+        order = Order.objects.create(
+                                     #user=validated_data['user'],
+                                     total_price=total_price,
+                                     products=product_details)
+
         return order
 
     def to_representation(self, instance):

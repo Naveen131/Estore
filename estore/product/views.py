@@ -17,7 +17,6 @@ from utils.common import APIResponse, CustomPagination
 class ProductAPIView(generics.ListCreateAPIView):
     serializer_class = ProductCreateSerializer
     pagination_class = CustomPagination
-    permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
 
     def list(self, request, *args, **kwargs):
