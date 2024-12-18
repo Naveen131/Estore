@@ -1,4 +1,4 @@
-# Django E-Commerce API - Local Development
+# Estore
 
 This project is a simple RESTful API for an e-commerce platform built with Django and Dockerized for local development. The API allows users to view products, add products, and place orders.
 
