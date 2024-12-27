@@ -30,3 +30,26 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id}"
+
+
+class Toppings(models.Model):
+    name = models.CharField(max_length=50, null=False,blank=False)
+
+    def __str__(self):
+        return self.name
+
+
+class Pizza(models.Model):
+    STATUS_CHOICES = [
+        ('Small', 'Small'),
+        ('Medium', 'Medium'),
+    ]
+    toppings = models.ManyToManyField(Toppings, null=True, blank=True)
+    name = models.CharField(max_length=50, null=False,blank=False)
+    size = models.CharField(choices=STATUS_CHOICES, null=False,blank=False, max_length=20)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+class PizzaOrder(models.Model):
+    pizzas = models.JSONField(null=False,blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)

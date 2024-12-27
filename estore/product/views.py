@@ -8,9 +8,18 @@ from utils.common import ListAPIViewWithPagination, CustomCreateAPIView
 
 from product.models import Product
 
-from product.serializers import ProductCreateSerializer, OrderCreateSerializer, OrderViewSerializer
+from product.serializers import (ProductCreateSerializer, OrderCreateSerializer,
+                                 OrderViewSerializer,PizzaViewSerializer)
 
 from utils.common import APIResponse, CustomPagination
+
+from product.models import Pizza
+
+from product.models import PizzaOrder
+
+from product.serializers import PizzaCreateSerializer
+
+from product.serializers import PizzaOrderViewSerializer
 
 
 # Create your views here.
@@ -70,3 +79,45 @@ class OrderCreateAPIView(CustomCreateAPIView):
 
     def get_view_serializer(self, instance):
         return OrderViewSerializer(instance)
+
+
+class PizzaAPIListView(generics.RetrieveAPIView):
+    serializer_class = PizzaViewSerializer
+    queryset = Pizza.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        data = request.data
+        query_params = self.request.query_params
+        try:
+            if query_params:
+                queryset = Pizza.objects.filter(name__icontains=query_params['name'])
+            else:
+                queryset = Pizza.objects.all()
+
+            serializer = self.serializer_class()
+
+            data = PizzaViewSerializer(queryset,many=True).data
+
+            return APIResponse(data=data, message='Success',status_code=200)
+        except Exception as e:
+            return APIResponse(data=None, message=str(e), status_code=500)
+
+
+class CreateOrderAPIView(CustomCreateAPIView):
+    serializer_class = PizzaCreateSerializer
+    queryset = PizzaOrder.objects.all()
+
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.serializer_class(data=request.data)
+
+        try:
+            if serializer.is_valid():
+                instance = serializer.create(serializer.validated_data)
+                data = PizzaOrderViewSerializer(instance).data
+                return APIResponse(data=data, message="Success", status_code=201)
+            else:
+                return APIResponse(data=None, message=serializer.errors, status_code=400)
+        except Exception as e:
+            return APIResponse(data=None, message=str(e), status_code=500)

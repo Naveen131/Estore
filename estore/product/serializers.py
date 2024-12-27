@@ -4,6 +4,12 @@ from utils.common import CustomRetrieveUpdateAPIView
 from product.models import Product, Order
 from utils.common import CreateUpdateMixin
 
+from product.models import Pizza
+
+from product.models import PizzaOrder
+
+from product.models import Toppings
+
 
 class ProductViewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,7 +33,6 @@ class OrderViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-
 
 class OrderCreateSerializer(serializers.ModelSerializer):
     # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -87,4 +92,52 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             "status": instance.status
         }
 
+
+
+class ToppingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Toppings
+        fields = '__all__'
+
+
+class PizzaViewSerializer(serializers.ModelSerializer):
+    toppings = ToppingsSerializer()
+    class Meta:
+        model = Pizza
+        fields = "__all__"
+
+
+class PizzaOrderViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PizzaOrder
+        fields = ('id', 'amount',)
+
+
+class PizzaCreateSerializer(serializers.ModelSerializer):
+    items = serializers.JSONField(required=True, error_messages={"required":"Items are Required"}, allow_null=False)
+
+    class Meta:
+        model = PizzaOrder
+        fields = ('items',)
+
+
+    def validate(self, attrs):
+        items = attrs.get('items')
+
+        for item in items:
+            if item['quantity'] <= 0:
+                raise serializers.ValidationError('Quantity should be greater than zero')
+        return attrs
+
+    def create(self, validated_data):
+        items = validated_data.pop('items')
+        amount = 0
+
+        for item in items:
+            pizza = Pizza.objects.get(id=item['id'])
+            amount += pizza.price * item['quantity']
+
+        order = PizzaOrder.objects.create(amount=amount, pizzas=items)
+
+        return order
 
